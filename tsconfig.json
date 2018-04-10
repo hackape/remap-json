@@ -1,0 +1,30 @@
+/* top level options:
+{
+  "extends": path to another `tsconfig.json` file to inherit from
+  "compilerOptions": see http://www.typescriptlang.org/docs/handbook/compiler-options.html
+  "files": takes a list of relative or absolute file paths
+  "include": list of globs, implicitly includes only files with .ts .tsx .d.ts extnames (and .js .jsx if `allowJs` is true)
+  "exclude": list of globs, defaults to excluding the node_modules, bower_components, jspm_packages and <outDir> directories when not specified
+} */
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "outDir": "dist",
+    "module": "es6",
+    "target": "es5",
+    "lib": ["es6", "dom"],
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noUnusedLocals": true
+  },
+  "exclude": ["node_modules", "build", "dist", "config", "scripts", "webpack"]
+}

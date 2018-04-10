@@ -1,0 +1,14 @@
+{
+  "name": "remap-json",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "hackape",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^2.5.3"
+  }
+}
