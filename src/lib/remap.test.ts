@@ -1,12 +1,23 @@
 import remap from './remap'
 
 test('basic test', () => {
-  const sourceData = { hello: 'world' }
-  const targetData = { hello: 'world' }
+  const source = { hello: 'world' }
+  const target = { hello: 'world' }
   expect(
-    remap(sourceData, types => {
+    remap(source, types => {
       const { string } = types
       return { hello: string }
     })
-  ).toEqual(targetData)
+  ).toEqual(target)
+})
+
+test('use `from()` to rename key', () => {
+  const source = { hello: 'world' }
+  const target = { hola: 'world' }
+  expect(
+    remap(source, types => {
+      const { from, string } = types
+      return { hola: from('hello').string }
+    })
+  ).toEqual(target)
 })
