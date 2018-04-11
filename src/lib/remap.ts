@@ -1,8 +1,8 @@
 import { get, set } from './utils'
-import Types, { ITargetSpecFunc } from './types'
+import Types, { ITargetSpecFunc, ISpecType, ITargetSpec } from './types'
 
-const getContextPath = (specValue: any) => {
-  return specValue.__context__.__path__
+const getContextPath = (specType: ISpecType) => {
+  return specType.__context__.__path__
 }
 
 const isSimpleType = (unknown: any) => {

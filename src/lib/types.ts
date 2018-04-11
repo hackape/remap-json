@@ -1,28 +1,26 @@
 import { assign } from './utils'
-export interface ITypeMember {
+export interface ISpecType {
   __context__: Types
 }
 
-export interface ITypePrimitive extends ITypeMember {
+export interface ITypePrimitive extends ISpecType {
   __primitive__: boolean
 }
 
 export interface ITypeString extends ITypePrimitive {
   (value: any): string
-  __type__: string
 }
 
 export interface ITypeNumber extends ITypePrimitive {
   (value: any): number
-  __type__: number
 }
 
-export interface ITypeFrom extends ITypeMember {
+export interface ITypeFrom {
   (key: string): Types
 }
 
 export interface ITargetSpec {
-  [s: string]: ITypeMember | ITargetSpec
+  [s: string]: ISpecType | ITargetSpec
 }
 
 export interface ITargetSpecFunc {
@@ -38,18 +36,12 @@ export default class Types {
     this.__path__ = path
     const identityFuncFactory = () => {
       const id = (value: any) => value
-      return assign(id, { __context__: this })
+      return assign(id, { __context__: this, __primitive__: true })
     }
 
-    this.string = assign(identityFuncFactory(), {
-      __primitive__: true,
-      __type__: 'string'
-    })
+    this.string = identityFuncFactory()
 
-    this.number = assign(identityFuncFactory(), {
-      __primitive__: true,
-      __type__: 0
-    })
+    this.number = identityFuncFactory()
 
     this.from = assign(
       (fromPath: string) => {
