@@ -48,3 +48,16 @@ test('`from()` in nested level', () => {
     })
   ).toEqual(target)
 })
+
+test('use `compute()` to return computed value', () => {
+  const source = { ratio: 0.42 }
+  const target = { percentage: '42%', ratio: 1.42 }
+  const result = remap(source, types => {
+    const { from, compute } = types
+    return {
+      percentage: from('ratio').compute((ratio: number) => `${ratio * 100}%`),
+      ratio: compute(ratio => ratio + 1)
+    }
+  })
+  expect(result).toEqual(target)
+})

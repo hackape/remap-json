@@ -1,5 +1,6 @@
 import { assign } from './utils'
 export interface ISpecType {
+  (value: any): any
   __context__: Types
 }
 
@@ -13,6 +14,15 @@ export interface ITypeString extends ITypePrimitive {
 
 export interface ITypeNumber extends ITypePrimitive {
   (value: any): number
+}
+
+export interface ITypeBoolean extends ITypePrimitive {
+  (value: any): boolean
+}
+
+type Func = (value: any) => any
+export interface ITypeCompute {
+  <T extends Func>(transformer: T): T & ISpecType
 }
 
 export interface ITypeFrom {
@@ -32,6 +42,7 @@ export default class Types {
   string: ITypeString
   number: ITypeNumber
   from: ITypeFrom
+  compute: ITypeCompute
   constructor(path: string = '') {
     this.__path__ = path
     const identityFuncFactory = () => {
@@ -40,8 +51,10 @@ export default class Types {
     }
 
     this.string = identityFuncFactory()
-
     this.number = identityFuncFactory()
+    this.compute = <T extends Func>(transformer: T) => {
+      return assign(transformer, { __context__: this })
+    }
 
     this.from = assign(
       (fromPath: string) => {

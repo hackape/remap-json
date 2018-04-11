@@ -20,7 +20,8 @@ function assembleTargetDataBySpec(sourceData: any, targetSpec: ITargetSpec) {
     if (typeof specValue === 'function') {
       const specType = specValue as ISpecType
       const sourcePath = getContextPath(specType) || key
-      set(targetData, key, get(sourceData, sourcePath))
+      const sourceValue = get(sourceData, sourcePath)
+      set(targetData, key, specType(sourceValue))
     } else {
       const nestedTargetSpec = specValue as ITargetSpec
       set(targetData, key, assembleTargetDataBySpec(sourceData[key], nestedTargetSpec))
