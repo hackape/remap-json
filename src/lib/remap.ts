@@ -12,6 +12,24 @@ const isSimpleType = (unknown: any) => {
   return false
 }
 
+function assembleTargetDataBySpec(sourceData: any, targetSpec: ITargetSpec) {
+  const targetKeys = Object.keys(targetSpec)
+  return targetKeys.reduce((targetData, key) => {
+    const specValue = targetSpec[key]
+
+    if (typeof specValue === 'function') {
+      const specType = specValue as ISpecType
+      const sourcePath = getContextPath(specType) || key
+      set(targetData, key, get(sourceData, sourcePath))
+    } else {
+      const nestedTargetSpec = specValue as ITargetSpec
+      set(targetData, key, assembleTargetDataBySpec(sourceData[key], nestedTargetSpec))
+    }
+
+    return targetData
+  }, {})
+}
+
 const getTargetPaths = (targetSpec: any) => {
   const targetPaths = []
   for (const key in targetSpec) {
@@ -24,18 +42,8 @@ const getTargetPaths = (targetSpec: any) => {
 }
 
 function remap(sourceData: any, targetSpecFunc: ITargetSpecFunc) {
-  const targetData = {}
   const targetSpec = targetSpecFunc(new Types())
-
-  const targetKeys = Object.keys(targetSpec)
-  targetKeys.forEach(key => {
-    const specValue = targetSpec[key]
-    const targetPath = key
-    const sourcePath = getContextPath(specValue) || targetPath
-    set(targetData, targetPath, get(sourceData, sourcePath))
-  })
-
-  return targetData
+  return assembleTargetDataBySpec(sourceData, targetSpec)
 }
 
 export default remap

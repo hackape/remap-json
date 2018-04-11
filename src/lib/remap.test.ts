@@ -32,3 +32,19 @@ test('use accept plain object as spec value', () => {
     })
   ).toEqual(target)
 })
+
+test('`from()` in nested level', () => {
+  const source = { data: { clicks: 100, costs: 150 } }
+  const target = { data: { visits: 100, costs: 150 } }
+  expect(
+    remap(source, types => {
+      const { number, from } = types
+      return {
+        data: {
+          visits: from('clicks').number,
+          costs: number
+        }
+      }
+    })
+  ).toEqual(target)
+})
