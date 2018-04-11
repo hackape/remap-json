@@ -1,11 +1,41 @@
-interface ITypes {
-  string: (s: any) => string
+import { get, set } from './utils'
+import Types, { ITargetSpecFunc } from './types'
+
+const getContextPath = (specValue: any) => {
+  return specValue.__context__.__path__
 }
 
-interface ITargetSpecFactory {
-  (types: ITypes): any
+const isSimpleType = (unknown: any) => {
+  if (typeof unknown === 'function') {
+    return true
+  }
+  return false
 }
 
-function remap(sourceData: any, targetSpecFactory: ITargetSpecFactory) {}
+const getTargetPaths = (targetSpec: any) => {
+  const targetPaths = []
+  for (const key in targetSpec) {
+    const specValue = targetSpec[key]
+    if (isSimpleType(specValue)) {
+      targetPaths.push(key)
+    }
+  }
+  return targetPaths
+}
+
+function remap(sourceData: any, targetSpecFunc: ITargetSpecFunc) {
+  const targetData = {}
+  const targetSpec = targetSpecFunc(new Types())
+
+  const targetKeys = Object.keys(targetSpec)
+  targetKeys.forEach(key => {
+    const specValue = targetSpec[key]
+    const targetPath = key
+    const sourcePath = getContextPath(specValue) || targetPath
+    set(targetData, targetPath, get(sourceData, sourcePath))
+  })
+
+  return targetData
+}
 
 export default remap
