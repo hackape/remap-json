@@ -1,11 +1,18 @@
 import { assign } from './utils'
-export interface ISpecType {
-  (value: any): any
+
+type AnyFunc = (value: any) => any
+
+export type ISpecType = AnyFunc & {
   __context__: Types
 }
 
-export interface ITypePrimitive extends ISpecType {
+export interface ITargetSpec {
+  [s: string]: ISpecType | ITargetSpec
+}
+
+export interface ITypePrimitive {
   __primitive__: boolean
+  __context__: Types
 }
 
 export interface ITypeString extends ITypePrimitive {
@@ -20,21 +27,12 @@ export interface ITypeBoolean extends ITypePrimitive {
   (value: any): boolean
 }
 
-type Func = (value: any) => any
 export interface ITypeCompute {
-  <T extends Func>(transformer: T): T & ISpecType
+  <T extends AnyFunc>(transformer: T): T & { __context__: Types }
 }
 
 export interface ITypeFrom {
   (key: string): Types
-}
-
-export interface ITargetSpec {
-  [s: string]: ISpecType | ITargetSpec
-}
-
-export interface ITargetSpecFunc {
-  (types: Types): ITargetSpec
 }
 
 export default class Types {
@@ -52,7 +50,7 @@ export default class Types {
 
     this.string = identityFuncFactory()
     this.number = identityFuncFactory()
-    this.compute = <T extends Func>(transformer: T) => {
+    this.compute = <T extends AnyFunc>(transformer: T) => {
       return assign(transformer, { __context__: this })
     }
 
@@ -62,10 +60,9 @@ export default class Types {
       },
       { __context__: this }
     )
-
-    const propsToDecorate = ['string']
-    propsToDecorate.forEach(prop => {
-      this[prop].__context__ = this
-    })
   }
+}
+
+export type ITargetDataFromSpec<T> = {
+  [P in keyof T]: T[P] extends AnyFunc ? ReturnType<T[P]> : ITargetDataFromSpec<T[P]>
 }
