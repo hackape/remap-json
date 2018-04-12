@@ -32,7 +32,7 @@ export interface ITypeCompute {
   <T extends AnyFunc>(transformer: T): T & { __context__: Types }
 }
 
-export interface ITypeFrom {
+export interface ITypeSelect {
   (key: string): Types
 }
 
@@ -52,9 +52,9 @@ export type ITypes = {
   string: ITypeString
   number: ITypeNumber
   boolean: ITypeBoolean
-  from: ITypeFrom
   compute: ITypeCompute
   array: ITypeArray
+  select: ITypeSelect
 }
 
 export default class Types implements ITypes {
@@ -62,9 +62,9 @@ export default class Types implements ITypes {
   string: ITypeString
   number: ITypeNumber
   boolean: ITypeBoolean
-  from: ITypeFrom
   compute: ITypeCompute
   array: ITypeArray
+  select: ITypeSelect
 
   constructor(path: string = '') {
     if (path) this.__path__ = path
@@ -86,7 +86,7 @@ export default class Types implements ITypes {
       })
     }
 
-    this.from = assign(
+    this.select = assign(
       (fromPath: string) => {
         return new Types(fromPath)
       },

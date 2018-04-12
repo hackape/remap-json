@@ -11,30 +11,30 @@ test('basic type matching', () => {
   expect(result).toEqual(target)
 })
 
-test('use `from()` to rename key', () => {
+test('use `select()` to rename key', () => {
   const source = { hello: 'world' }
   const target = { hola: 'world' }
-  const result = remap(source, ({ from }) => ({ hola: from('hello').string }))
+  const result = remap(source, ({ select }) => ({ hola: select('hello').string }))
   expect(result).toEqual(target)
 })
 
-test('use `from()` in nested level', () => {
+test('use `select()` in nested level', () => {
   const source = { data: { clicks: 100, costs: 150 } }
   const target = { data: { visits: 100, costs: 150 } }
-  const result = remap(source, ({ number, from }) => ({
+  const result = remap(source, ({ number, select }) => ({
     data: {
-      visits: from('clicks').number,
+      visits: select('clicks').number,
       costs: number
     }
   }))
   expect(result).toEqual(target)
 })
 
-test('use dotted path in `from()` param', () => {
+test('use dotted path in `select()` param', () => {
   const source = { deep: { nested: { data: { name: 'John Snow' } } } }
   const target = { hero: 'John Snow' }
-  const result = remap(source, ({ from }) => ({
-    hero: from('deep.nested.data.name').string
+  const result = remap(source, ({ select }) => ({
+    hero: select('deep.nested.data.name').string
   }))
   expect(result).toEqual(target)
 })
@@ -51,8 +51,8 @@ test('use accept plain object as spec value', () => {
 test('use `compute()` to return computed value', () => {
   const source = { ratio: 0.42 }
   const target = { percentage: '42%', ratio: 1.42 }
-  const result = remap(source, ({ from, compute }) => ({
-    percentage: from('ratio').compute((ratio: number) => `${ratio * 100}%`),
+  const result = remap(source, ({ select, compute }) => ({
+    percentage: select('ratio').compute((ratio: number) => `${ratio * 100}%`),
     ratio: compute((ratio: number) => ratio + 1)
   }))
   expect(result).toEqual(target)
@@ -61,8 +61,8 @@ test('use `compute()` to return computed value', () => {
 test('use plain function in place of `compute()`', () => {
   const source = { ratio: 0.42 }
   const target = { percentage: '42%', ratio: 1.42 }
-  const result = remap(source, ({ from }) => ({
-    percentage: from('ratio').compute((ratio: number) => `${ratio * 100}%`),
+  const result = remap(source, ({ select }) => ({
+    percentage: select('ratio').compute((ratio: number) => `${ratio * 100}%`),
     ratio: (ratio: number) => ratio + 1
   }))
   expect(result).toEqual(target)
@@ -75,8 +75,8 @@ test('use `array()` to return array type', () => {
   const target = {
     list: [{ username: 'john' }, { username: 'benjamin' }]
   }
-  const result = remap(source, ({ from, array }) => ({
-    list: array({ username: from('name').compute((name: string) => name.toLowerCase()) })
+  const result = remap(source, ({ select, array }) => ({
+    list: array({ username: select('name').compute((name: string) => name.toLowerCase()) })
   }))
 
   expect(result).toEqual(target)
