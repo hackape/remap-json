@@ -18,16 +18,7 @@ test('use `from()` to rename key', () => {
   expect(result).toEqual(target)
 })
 
-test('use accept plain object as spec value', () => {
-  const source = { data: { clicks: 100, costs: 150 } }
-  const target = { data: { clicks: 100, costs: 150 } }
-  const result = remap(source, ({ number }) => ({
-    data: { clicks: number, costs: number }
-  }))
-  expect(result).toEqual(target)
-})
-
-test('`from()` in nested level', () => {
+test('use `from()` in nested level', () => {
   const source = { data: { clicks: 100, costs: 150 } }
   const target = { data: { visits: 100, costs: 150 } }
   const result = remap(source, ({ number, from }) => ({
@@ -35,6 +26,24 @@ test('`from()` in nested level', () => {
       visits: from('clicks').number,
       costs: number
     }
+  }))
+  expect(result).toEqual(target)
+})
+
+test('use dotted path in `from()` param', () => {
+  const source = { deep: { nested: { data: { name: 'John Snow' } } } }
+  const target = { hero: 'John Snow' }
+  const result = remap(source, ({ from }) => ({
+    hero: from('deep.nested.data.name').string
+  }))
+  expect(result).toEqual(target)
+})
+
+test('use accept plain object as spec value', () => {
+  const source = { data: { clicks: 100, costs: 150 } }
+  const target = { data: { clicks: 100, costs: 150 } }
+  const result = remap(source, ({ number }) => ({
+    data: { clicks: number, costs: number }
   }))
   expect(result).toEqual(target)
 })
@@ -70,14 +79,5 @@ test('use `array()` to return array type', () => {
     list: array({ username: from('name').compute((name: string) => name.toLowerCase()) })
   }))
 
-  expect(result).toEqual(target)
-})
-
-test('use dotted path in `from()` param', () => {
-  const source = { deep: { nested: { data: { name: 'John Snow' } } } }
-  const target = { hero: 'John Snow' }
-  const result = remap(source, ({ from }) => ({
-    hero: from('deep.nested.data.name').string
-  }))
   expect(result).toEqual(target)
 })
