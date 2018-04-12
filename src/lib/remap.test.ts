@@ -58,6 +58,19 @@ test('use `compute()` to return computed value', () => {
   expect(result).toEqual(target)
 })
 
+test('use plain function in place of `compute()`', () => {
+  const source = { ratio: 0.42 }
+  const target = { percentage: '42%', ratio: 1.42 }
+  const result = remap(source, types => {
+    const { from } = types
+    return {
+      percentage: from('ratio').compute((ratio: number) => `${ratio * 100}%`),
+      ratio: (ratio: number) => ratio + 1
+    }
+  })
+  expect(result).toEqual(target)
+})
+
 test('use `array()` to return array type', () => {
   const source = {
     list: [{ name: 'John' }, { name: 'Benjamin' }]

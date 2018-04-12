@@ -4,7 +4,7 @@ import remap from './remap'
 type AnyFunc = (value: any) => any
 
 export type ISpecType = AnyFunc & {
-  __context__: Types
+  __context__?: Types
 }
 
 export interface ITargetSpec {

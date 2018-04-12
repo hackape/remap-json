@@ -2,7 +2,7 @@ import { get, set } from './utils'
 import Types, { ISpecType, ITargetSpec, IGetTargetDataFromSpec } from './types'
 
 const getContextPath = (specType: ISpecType) => {
-  return specType.__context__.__path__
+  return specType.__context__ ? specType.__context__.__path__ : null
 }
 
 const isSimpleType = (unknown: any) => {
