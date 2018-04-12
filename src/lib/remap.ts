@@ -5,13 +5,6 @@ const getContextPath = (specType: ISpecType) => {
   return specType.__context__ ? specType.__context__.__path__ : null
 }
 
-const isSimpleType = (unknown: any) => {
-  if (typeof unknown === 'function') {
-    return true
-  }
-  return false
-}
-
 function assembleTargetDataBySpec(sourceData: any, targetSpec: ITargetSpec) {
   const targetKeys = Object.keys(targetSpec)
   return targetKeys.reduce((targetData, key) => {
@@ -29,17 +22,6 @@ function assembleTargetDataBySpec(sourceData: any, targetSpec: ITargetSpec) {
 
     return targetData
   }, {})
-}
-
-const getTargetPaths = (targetSpec: any) => {
-  const targetPaths = []
-  for (const key in targetSpec) {
-    const specValue = targetSpec[key]
-    if (isSimpleType(specValue)) {
-      targetPaths.push(key)
-    }
-  }
-  return targetPaths
 }
 
 function remap<T extends ITargetSpec>(sourceData: any, targetSpecFunc: (types: ITypes) => T) {
