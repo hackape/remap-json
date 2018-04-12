@@ -1,19 +1,23 @@
 import { assign } from './utils'
-import remap from './remap'
 
 type AnyFunc = (value: any) => any
 
-export type ISpecType = AnyFunc & {
-  __context__?: Types
+export type IContextBarer = {
+  __context__?: Types | any
 }
 
-export interface ITargetSpec {
-  [s: string]: ISpecType | ITargetSpec
+export interface ISpecType extends IContextBarer {
+  (value: any): any
 }
 
-export interface ITypePrimitive {
+export interface ITargetSpec extends IContextBarer {
+  [s: string]: ISpecType | ITargetSpec | ITargetSpecArray
+}
+
+export type ITargetSpecArray = ITargetSpec[] & IContextBarer
+
+export interface ITypePrimitive extends IContextBarer {
   __primitive__: boolean
-  __context__: Types
 }
 
 export interface ITypeString extends ITypePrimitive {
@@ -29,24 +33,15 @@ export interface ITypeBoolean extends ITypePrimitive {
 }
 
 export interface ITypeCompute {
-  <T extends AnyFunc>(transformer: T): T & { __context__: Types }
+  <T extends ISpecType>(transformer: T): T
 }
 
 export interface ITypeSelect {
   (key: string): Types
 }
 
-export interface ITypeArray {
-  <T extends ITargetSpec>(spec: T): ((array: any[]) => IGetTargetDataFromSpec<T>[]) & {
-    __context__: Types
-  }
-}
-
-export interface ITypeObject {
-  <T extends ITargetSpec>(spec: T): ((object: any) => IGetTargetDataFromSpec<T>) & {
-    __context__: Types
-  }
-}
+export type ITypeArray = <T extends ITargetSpec>(spec: T) => T[] & IContextBarer
+export type ITypeObject = <T extends ITargetSpec>(spec: T) => T
 
 export type ITypes = {
   string: ITypeString
@@ -83,14 +78,23 @@ export default class Types implements ITypes {
       return assign(transformer, { __context__: this })
     }
 
-    this.array = spec => {
-      return this.compute((sourceArray: any[]) => {
-        if (!Array.isArray(sourceArray)) sourceArray = []
-        return sourceArray.map(sourceItem => remap(sourceItem, () => spec))
+    this.object = <T extends ITargetSpec>(spec: T) => {
+      return Object.defineProperty(spec, '__context__', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value: this
       })
     }
 
-    this.object = spec => this.compute((sourceObject: any) => remap(sourceObject, () => spec))
+    this.array = <T extends ITargetSpec>(spec: T) => {
+      return Object.defineProperty([spec], '__context__', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value: this
+      })
+    }
 
     this.select = assign(
       (fromPath: string) => {
@@ -113,6 +117,7 @@ export default class Types implements ITypes {
  * which effectively defeat the purpose of having this type in first place -- to give hint of type
  * of returned data in IDE. Thus it has to be constructed this way, to manually tap into deeper level
  */
+
 export type IGetTargetDataFromSpec<T> = {
   [P0 in keyof T]: T[P0] extends AnyFunc
     ? ReturnType<T[P0]>

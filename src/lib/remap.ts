@@ -1,30 +1,42 @@
 import { get, set } from './utils'
-import Types, { ITypes, ISpecType, ITargetSpec, IGetTargetDataFromSpec } from './types'
+import Types, { ITypes, ITargetSpec, ITargetSpecArray, IGetTargetDataFromSpec } from './types'
 
-const getContextPath = (specType: ISpecType) => {
-  return specType.__context__ ? specType.__context__.__path__ : null
+const getContextPath = (arg: { __context__?: { __path__?: string } }) => {
+  return arg.__context__ ? arg.__context__.__path__ : null
 }
 
-function assembleTargetDataBySpec(sourceData: any, targetSpec: ITargetSpec) {
+function assembleTargetDataBySpec(sourceData: any, targetSpec: any) {
+  if (!targetSpec) return sourceData
+
+  if (Array.isArray(targetSpec)) {
+    return sourceData.map((sourceDataItem: any) =>
+      assembleTargetDataBySpec(sourceDataItem, targetSpec[0])
+    )
+  }
+
   const targetKeys = Object.keys(targetSpec)
   return targetKeys.reduce((targetData, key) => {
     const specValue = targetSpec[key]
 
-    if (typeof specValue === 'function') {
-      const specType = specValue as ISpecType
-      const sourcePath = getContextPath(specType) || key
+    const getTargetValue = () => {
+      const sourcePath = getContextPath(specValue) || key
       const sourceValue = get(sourceData, sourcePath)
-      set(targetData, key, specType(sourceValue))
-    } else {
-      const nestedTargetSpec = specValue as ITargetSpec
-      set(targetData, key, assembleTargetDataBySpec(sourceData[key], nestedTargetSpec))
+      if (typeof specValue === 'function') {
+        return specValue(sourceValue)
+      } else {
+        return assembleTargetDataBySpec(sourceValue, specValue)
+      }
     }
 
+    set(targetData, key, getTargetValue())
     return targetData
   }, {})
 }
 
-function remap<T extends ITargetSpec>(sourceData: any, targetSpecFunc: (types: ITypes) => T) {
+function remap<T extends ITargetSpec | ITargetSpecArray>(
+  sourceData: any,
+  targetSpecFunc: (types: ITypes) => T
+) {
   const targetSpec = targetSpecFunc(new Types())
   const targetData = assembleTargetDataBySpec(sourceData, targetSpec)
   return targetData as IGetTargetDataFromSpec<T>

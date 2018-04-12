@@ -67,8 +67,18 @@ test('use `array()` to return array type', () => {
     list: [{ username: 'john' }, { username: 'benjamin' }]
   }
   const result = remap(source, ({ select, array }) => ({
-    list: array({ username: select('name').compute((name: string) => name.toLowerCase()) })
+    list: [{ username: select('name').compute((name: string) => name.toLowerCase()) }]
   }))
+
+  expect(result).toEqual(target)
+})
+
+test('use array of target spec for array sourceData', () => {
+  const source = [{ name: 'John' }, { name: 'Benjamin' }]
+  const target = [{ username: 'john' }, { username: 'benjamin' }]
+  const result = remap(source, ({ select }) => [
+    { username: select('name').compute((name: string) => name.toLowerCase()) }
+  ])
 
   expect(result).toEqual(target)
 })
