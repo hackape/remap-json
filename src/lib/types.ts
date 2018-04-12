@@ -37,7 +37,7 @@ export interface ITypeFrom {
 }
 
 export interface ITypeArray {
-  <T extends ITargetSpec>(spec: T): ((array: any[]) => ITargetDataFromSpec<T>[]) & {
+  <T extends ITargetSpec>(spec: T): ((array: any[]) => IGetTargetDataFromSpec<T>[]) & {
     __context__: Types
   }
 }
@@ -77,6 +77,6 @@ export default class Types {
   }
 }
 
-export type ITargetDataFromSpec<T> = {
-  [P in keyof T]: T[P] extends AnyFunc ? ReturnType<T[P]> : ITargetDataFromSpec<T[P]>
+export type IGetTargetDataFromSpec<T> = {
+  [P in keyof T]: T[P] extends AnyFunc ? ReturnType<T[P]> : IGetTargetDataFromSpec<T[P]>
 }
