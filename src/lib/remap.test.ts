@@ -39,15 +39,6 @@ test('use dotted path in `select()` param', () => {
   expect(result).toEqual(target)
 })
 
-test('use accept plain object as spec value', () => {
-  const source = { data: { clicks: 100, costs: 150 } }
-  const target = { data: { clicks: 100, costs: 150 } }
-  const result = remap(source, ({ number }) => ({
-    data: { clicks: number, costs: number }
-  }))
-  expect(result).toEqual(target)
-})
-
 test('use `compute()` to return computed value', () => {
   const source = { ratio: 0.42 }
   const target = { percentage: '42%', ratio: 1.42 }
@@ -79,5 +70,23 @@ test('use `array()` to return array type', () => {
     list: array({ username: select('name').compute((name: string) => name.toLowerCase()) })
   }))
 
+  expect(result).toEqual(target)
+})
+
+test('use `object()` to return nested object', () => {
+  const source = { data: { clicks: 100, costs: 150 } }
+  const target = { foo: { clicks: 100, costs: 150 } }
+  const result = remap(source, ({ select, object, number }) => ({
+    foo: select('data').object({ clicks: number, costs: number })
+  }))
+  expect(result).toEqual(target)
+})
+
+test('use accept plain object in place of `object()`', () => {
+  const source = { data: { clicks: 100, costs: 150 } }
+  const target = { data: { clicks: 100, costs: 150 } }
+  const result = remap(source, ({ number }) => ({
+    data: { clicks: number, costs: number }
+  }))
   expect(result).toEqual(target)
 })

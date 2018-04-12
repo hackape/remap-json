@@ -54,6 +54,7 @@ export type ITypes = {
   boolean: ITypeBoolean
   compute: ITypeCompute
   array: ITypeArray
+  object: ITypeObject
   select: ITypeSelect
 }
 
@@ -64,6 +65,7 @@ export default class Types implements ITypes {
   boolean: ITypeBoolean
   compute: ITypeCompute
   array: ITypeArray
+  object: ITypeObject
   select: ITypeSelect
 
   constructor(path: string = '') {
@@ -76,15 +78,19 @@ export default class Types implements ITypes {
     this.string = identityFuncFactory()
     this.number = identityFuncFactory()
     this.boolean = identityFuncFactory()
+
     this.compute = <T extends AnyFunc>(transformer: T) => {
       return assign(transformer, { __context__: this })
     }
+
     this.array = spec => {
       return this.compute((sourceArray: any[]) => {
         if (!Array.isArray(sourceArray)) sourceArray = []
         return sourceArray.map(sourceItem => remap(sourceItem, () => spec))
       })
     }
+
+    this.object = spec => this.compute((sourceObject: any) => remap(sourceObject, () => spec))
 
     this.select = assign(
       (fromPath: string) => {
