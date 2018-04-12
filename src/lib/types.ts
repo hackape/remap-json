@@ -42,9 +42,16 @@ export interface ITypeArray {
   }
 }
 
+export interface ITypeObject {
+  <T extends ITargetSpec>(spec: T): ((object: any) => IGetTargetDataFromSpec<T>) & {
+    __context__: Types
+  }
+}
+
 export type ITypes = {
   string: ITypeString
   number: ITypeNumber
+  boolean: ITypeBoolean
   from: ITypeFrom
   compute: ITypeCompute
   array: ITypeArray
@@ -54,9 +61,11 @@ export default class Types implements ITypes {
   __path__?: string
   string: ITypeString
   number: ITypeNumber
+  boolean: ITypeBoolean
   from: ITypeFrom
   compute: ITypeCompute
   array: ITypeArray
+
   constructor(path: string = '') {
     if (path) this.__path__ = path
     const identityFuncFactory = () => {
@@ -66,6 +75,7 @@ export default class Types implements ITypes {
 
     this.string = identityFuncFactory()
     this.number = identityFuncFactory()
+    this.boolean = identityFuncFactory()
     this.compute = <T extends AnyFunc>(transformer: T) => {
       return assign(transformer, { __context__: this })
     }

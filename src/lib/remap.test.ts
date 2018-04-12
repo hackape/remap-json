@@ -1,11 +1,11 @@
 import remap from './remap'
 
-test('basic test', () => {
-  const source = { hello: 'world' }
-  const target = { hello: 'world' }
+test('basic type matching', () => {
+  const source = { hello: 'world', code: 0, state: true }
+  const target = { hello: 'world', code: 0, state: true }
   const result = remap(source, types => {
-    const { string } = types
-    return { hello: string }
+    const { string, number, boolean } = types
+    return { hello: string, code: number, state: boolean }
   })
   expect(result).toEqual(target)
 })
