@@ -57,3 +57,20 @@ test('use `compute()` to return computed value', () => {
   })
   expect(result).toEqual(target)
 })
+
+test('use `array()` to return array type', () => {
+  const source = {
+    list: [{ name: 'John' }, { name: 'Benjamin' }]
+  }
+  const target = {
+    list: [{ username: 'john' }, { username: 'benjamin' }]
+  }
+  const result = remap(source, types => {
+    const { from, array } = types
+    return {
+      list: array({ username: from('name').compute((name: string) => name.toLowerCase()) })
+    }
+  })
+
+  expect(result).toEqual(target)
+})
