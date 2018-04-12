@@ -87,3 +87,24 @@ test('use `array()` to return array type', () => {
 
   expect(result).toEqual(target)
 })
+
+test('use dotted path in `from()` param', () => {
+  const source = {
+    deep: {
+      nested: {
+        data: {
+          name: 'John Snow'
+        }
+      }
+    }
+  }
+
+  const target = { hero: 'John Snow' }
+  const result = remap(source, types => {
+    const { from } = types
+    return {
+      hero: from('deep.nested.data.name').string
+    }
+  })
+  expect(result).toEqual(target)
+})
