@@ -1,5 +1,5 @@
 import { get, set } from './utils'
-import Types, { ISpecType, ITargetSpec, IGetTargetDataFromSpec } from './types'
+import Types, { ITypes, ISpecType, ITargetSpec, IGetTargetDataFromSpec } from './types'
 
 const getContextPath = (specType: ISpecType) => {
   return specType.__context__ ? specType.__context__.__path__ : null
@@ -42,7 +42,7 @@ const getTargetPaths = (targetSpec: any) => {
   return targetPaths
 }
 
-function remap<T extends ITargetSpec>(sourceData: any, targetSpecFunc: (types: Types) => T) {
+function remap<T extends ITargetSpec>(sourceData: any, targetSpecFunc: (types: ITypes) => T) {
   const targetSpec = targetSpecFunc(new Types())
   const targetData = assembleTargetDataBySpec(sourceData, targetSpec)
   return targetData as IGetTargetDataFromSpec<T>

@@ -42,15 +42,23 @@ export interface ITypeArray {
   }
 }
 
-export default class Types {
-  __path__: string
+export type ITypes = {
+  string: ITypeString
+  number: ITypeNumber
+  from: ITypeFrom
+  compute: ITypeCompute
+  array: ITypeArray
+}
+
+export default class Types implements ITypes {
+  __path__?: string
   string: ITypeString
   number: ITypeNumber
   from: ITypeFrom
   compute: ITypeCompute
   array: ITypeArray
   constructor(path: string = '') {
-    this.__path__ = path
+    if (path) this.__path__ = path
     const identityFuncFactory = () => {
       const id = (value: any) => value
       return assign(id, { __context__: this, __primitive__: true })
