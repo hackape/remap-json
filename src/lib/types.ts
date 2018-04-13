@@ -16,19 +16,15 @@ export interface ITargetSpec extends IContextBarer {
 
 export type ITargetSpecArray = ITargetSpec[] & IContextBarer
 
-export interface ITypePrimitive extends IContextBarer {
-  __primitive__: boolean
-}
-
-export interface ITypeString extends ITypePrimitive {
+export interface ITypeString extends IContextBarer {
   (value: any): string
 }
 
-export interface ITypeNumber extends ITypePrimitive {
+export interface ITypeNumber extends IContextBarer {
   (value: any): number
 }
 
-export interface ITypeBoolean extends ITypePrimitive {
+export interface ITypeBoolean extends IContextBarer {
   (value: any): boolean
 }
 
@@ -67,7 +63,7 @@ export default class Types implements ITypes {
     if (path) this.__path__ = path
     const identityFuncFactory = () => {
       const id = (value: any) => value
-      return assign(id, { __context__: this, __primitive__: true })
+      return assign(id, { __context__: this })
     }
 
     this.string = identityFuncFactory()
