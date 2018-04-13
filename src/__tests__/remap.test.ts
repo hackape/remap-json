@@ -1,4 +1,4 @@
-import remap from './remap'
+import remap from '../lib/remap'
 
 test('basic type matching', () => {
   const source = { hello: 'world', code: 0, state: true }
