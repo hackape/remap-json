@@ -1,6 +1,7 @@
 import { assign } from './utils'
 
 type AnyFunc = (value: any) => any
+type ArrayElement<T extends Array<any>> = T extends Array<infer R> ? R : any
 
 export type IContextBarer = {
   __context__?: Types | any
@@ -102,40 +103,49 @@ export default class Types implements ITypes {
 }
 
 /*
- * `IGetTargetDataFromSpec<Spec>` return typeof targetData from given spec type
  * This ugly functional type is best expressed as:
  * ```
- * IGetTargetDataFromSpec<T> = {
- *   [P in keyof T]: T[P] extends AnyFunc ? ReturnType<T[P]> : IGetTargetDataFromSpec<T[P]>
+ * getTypeForNoneArray<T> = T extends AnyFunc ? ReturnType<T> : {
+ *   [P in keyof T]: T[P] extends any[] ? IArray<T[P]> : getTypeForNoneArray<T[P]>
  * }
  * ```
- * But the VSCode IDE hint won't tap into real content of deeper level of `IGetTargetDataFromSpec`,
+ * But the VSCode IDE hint won't tap into real content of deeper level of recursion type,
  * which effectively defeat the purpose of having this type in first place -- to give hint of type
  * of returned data in IDE. Thus it has to be constructed this way, to manually tap into deeper level
  */
-
-export type IGetTargetDataFromSpec<T> = {
-  [P0 in keyof T]: T[P0] extends AnyFunc
-    ? ReturnType<T[P0]>
-    : {
-        [P1 in keyof T[P0]]: T[P0][P1] extends AnyFunc
-          ? ReturnType<T[P0][P1]>
+type getTypeForNoneArray<T> = T extends AnyFunc
+  ? ReturnType<T>
+  : {
+      [P0 in keyof T]: T[P0] extends any[]
+        ? IArray<T[P0]>
+        : T[P0] extends AnyFunc
+          ? ReturnType<T[P0]>
           : {
-              [P2 in keyof T[P0][P1]]: T[P0][P1][P2] extends AnyFunc
-                ? ReturnType<T[P0][P1][P2]>
-                : {
-                    [P3 in keyof T[P0][P1][P2]]: T[P0][P1][P2][P3] extends AnyFunc
-                      ? ReturnType<T[P0][P1][P2][P3]>
-                      : {
-                          [P4 in keyof T[P0][P1][P2][P3]]: T[P0][P1][P2][P3][P4] extends AnyFunc
-                            ? ReturnType<T[P0][P1][P2][P3][P4]>
-                            : {
-                                [P5 in keyof T[P0][P1][P2][P3][P4]]: T[P0][P1][P2][P3][P4][P5] extends AnyFunc
-                                  ? ReturnType<T[P0][P1][P2][P3][P4][P5]>
-                                  : IGetTargetDataFromSpec<T[P0][P1][P2][P3][P4][P5]>
-                              }
-                        }
-                  }
+              [P1 in keyof T[P0]]: T[P0][P1] extends any[]
+                ? IArray<T[P0][P1]>
+                : T[P0][P1] extends AnyFunc
+                  ? ReturnType<T[P0][P1]>
+                  : {
+                      [P2 in keyof T[P0][P1]]: T[P0][P1][P2] extends any[]
+                        ? IArray<T[P0][P1][P2]>
+                        : T[P0][P1][P2] extends AnyFunc
+                          ? ReturnType<T[P0][P1][P2]>
+                          : {
+                              [P3 in keyof T[P0][P1][P2]]: T[P0][P1][P2][P3] extends any[]
+                                ? IArray<T[P0][P1][P2][P3]>
+                                : T[P0][P1][P2][P3] extends AnyFunc
+                                  ? ReturnType<T[P0][P1][P2][P3]>
+                                  : {
+                                      [P4 in keyof T[P0][P1][P2][P3]]: T[P0][P1][P2][P3][P4] extends any[]
+                                        ? IArray<T[P0][P1][P2][P3][P4]>
+                                        : getTypeForNoneArray<T[P0][P1][P2][P3][P4]>
+                                    }
+                            }
+                    }
             }
-      }
-}
+    }
+
+type getTypeForAnyValue<V> = V extends any[] ? IArray<V> : getTypeForNoneArray<V>
+interface IArray<T extends any[]> extends Array<getTypeForAnyValue<ArrayElement<T>>> {}
+
+export type IGetTargetDataFromSpec<T> = getTypeForAnyValue<T>
