@@ -1,5 +1,11 @@
 import { get, set } from './utils'
-import Types, { ITypes, ITargetSpec, ITargetSpecArray, IGetTargetDataFromSpec } from './types'
+import Types, {
+  ITypes,
+  ITargetSpec,
+  ITargetSpecArray,
+  IGetTargetDataFromSpec,
+  IArray
+} from './types'
 
 const getContextPath = (arg: { __context__?: { __path__?: string } }) => {
   return arg.__context__ ? arg.__context__.__path__ : null

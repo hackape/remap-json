@@ -1,9 +1,10 @@
 {
   "name": "remap-json",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "lib/remap.ts",
+  "types": "lib/remap.d.ts",
   "scripts": {
-    "build": "rm -r lib; cp -r ./src ./lib; tsc",
+    "build": "rm -r lib; tsc --declaration",
     "test": "jest"
   },
   "jest": {

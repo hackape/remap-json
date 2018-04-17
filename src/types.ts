@@ -1,7 +1,7 @@
 import { assign } from './utils'
 
-type AnyFunc = (value: any) => any
-type ArrayElement<T extends Array<any>> = T extends Array<infer R> ? R : any
+export type AnyFunc = (value: any) => any
+export type ArrayElement<T extends Array<any>> = T extends Array<infer R> ? R : any
 
 export type IContextBarer = {
   __context__?: Types | any
@@ -113,7 +113,7 @@ export default class Types implements ITypes {
  * which effectively defeat the purpose of having this type in first place -- to give hint of type
  * of returned data in IDE. Thus it has to be constructed this way, to manually tap into deeper level
  */
-type getTypeForNoneArray<T> = T extends AnyFunc
+export type getTypeForNoneArray<T> = T extends AnyFunc
   ? ReturnType<T>
   : {
       [P0 in keyof T]: T[P0] extends any[]
@@ -145,7 +145,7 @@ type getTypeForNoneArray<T> = T extends AnyFunc
             }
     }
 
-type getTypeForAnyValue<V> = V extends any[] ? IArray<V> : getTypeForNoneArray<V>
-interface IArray<T extends any[]> extends Array<getTypeForAnyValue<ArrayElement<T>>> {}
+export type getTypeForAnyValue<V> = V extends any[] ? IArray<V> : getTypeForNoneArray<V>
+export interface IArray<T extends any[]> extends Array<getTypeForAnyValue<ArrayElement<T>>> {}
 
 export type IGetTargetDataFromSpec<T> = getTypeForAnyValue<T>
