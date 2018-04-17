@@ -1,9 +1,9 @@
 {
   "name": "remap-json",
   "version": "0.0.1",
-  "main": "index.js",
+  "main": "lib/remap.ts",
   "scripts": {
-    "start": "tsc",
+    "build": "rm -r lib; cp -r ./src ./lib; tsc",
     "test": "jest"
   },
   "jest": {
@@ -11,17 +11,11 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ]
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"]
   },
   "author": "hackape",
   "license": "MIT",
+  "files": ["lib"],
   "devDependencies": {
     "@types/jest": "^22.2.2",
     "jest": "^22.4.3",
