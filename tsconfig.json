@@ -8,16 +8,13 @@
 } */
 {
   "compilerOptions": {
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["src/*"]
-    },
-    "outDir": "dist",
+    "baseUrl": "./src",
+    "outDir": "lib",
     "module": "es6",
     "target": "es5",
     "lib": ["es6", "dom"],
     "moduleResolution": "node",
-    "sourceMap": true,
+    "sourceMap": false,
     "experimentalDecorators": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
@@ -26,5 +23,5 @@
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true
   },
-  "exclude": ["node_modules", "build", "dist", "config", "scripts", "webpack"]
+  "files": ["src/remap"]
 }
